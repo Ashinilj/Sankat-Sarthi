@@ -639,12 +639,12 @@ const governmentRecordsData = [
   },
 ]
 
-const reliefGroupsData = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-]
+// const reliefGroupsData = [
+//   { name: "Group A", value: 400 },
+//   { name: "Group B", value: 300 },
+//   { name: "Group C", value: 300 },
+//   { name: "Group D", value: 200 },
+// ]
 
 const rescueRequestData = [
   { name: "Jan", uv: 4000, pv: 2400, amt: 2400 },
@@ -656,13 +656,13 @@ const rescueRequestData = [
   { name: "Jul", uv: 3490, pv: 4300, amt: 2100 },
 ]
 
-const expenditureData = [
-  { name: "Food", value: 600 },
-  { name: "Medical", value: 400 },
-  { name: "Shelter", value: 300 },
-  { name: "Transport", value: 200 },
-  { name: "Other", value: 100 },
-]
+// const expenditureData = [
+//   { name: "Food", value: 600 },
+//   { name: "Medical", value: 400 },
+//   { name: "Shelter", value: 300 },
+//   { name: "Transport", value: 200 },
+//   { name: "Other", value: 100 },
+// ]
 
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState("dashboard")
