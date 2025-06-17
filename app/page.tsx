@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import {
   BarChart3,
   Users,
@@ -34,7 +35,6 @@ import {
   Database,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -43,7 +43,113 @@ import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PieChart, BarChart, Pie, Bar, ResponsiveContainer } from "recharts"
 
-const navigationItems = [
+// Type definitions
+interface NavigationItem {
+  icon: React.ElementType
+  label: string
+  id: string
+}
+
+
+// interface Tab {
+//   label: string
+//   id: string
+//   active?: boolean
+//   badge?: string
+// }
+
+interface ActivityItem {
+  caseId: string
+  type: string
+  status: string[]
+  responses: string[]
+}
+
+interface NewsItem {
+  date: string
+  content: string
+  source: string
+  link: string
+}
+
+interface RescueRequest {
+  id: number
+  subject: string
+  timeReceived: string
+  category: string
+  location: string
+  verification: string
+  sender: string
+  response: string
+  checked: boolean
+}
+
+interface ReliefRequest {
+  id: string
+  timeReceived: string
+  category: string
+  location: string
+  status: string
+  response: string
+  commits: string
+}
+
+interface VolunteerRecord {
+  id: string
+  name: string
+  gender: string
+  contact: string
+  status: string
+  medicalProfile: string
+  email: string
+  fullContact: string
+  address: string
+  bloodGroup: string
+  allergy: string
+  medicalConditions: string
+  phobia: string
+  phrAddress: string
+  ayushmanId: string
+  cases: number
+  modeOfHelp: string
+  skills: string[]
+  profession: string[]
+  avatar: string
+}
+
+interface GovernmentRecord {
+  govId: string
+  name: string
+  aadharNo: string
+  lastProfileUpdate: string
+  lastActivity: string
+  zipCode: string
+}
+
+interface CaseVerification {
+  id: number
+  concern: string
+  location: string
+  timeReceived: string
+  ipAddress: string
+  status: string
+}
+
+interface VolunteerVerification {
+  id: number
+  name: string
+  approvalStatus: string
+  timeReceived: string
+  status: string
+}
+
+interface ConfirmationAction {
+  action: string
+  type: string
+  item: CaseVerification | VolunteerVerification
+}
+
+const navigationItems: NavigationItem[] = [
   { icon: BarChart3, label: "Dashboard", id: "dashboard" },
   { icon: FileText, label: "Requests", id: "requests" },
   { icon: Database, label: "Records", id: "records" },
@@ -54,15 +160,15 @@ const navigationItems = [
   { icon: HelpCircle, label: "Help", id: "help" },
 ]
 
-const tabs = [
-  { label: "Portal", id: "portal", active: true },
-  { label: "Stats", id: "stats" },
-  { label: "Inbox", id: "inbox" },
-  { label: "Team", id: "team" },
-  { label: "Notifications", id: "notifications", badge: "3" },
-]
+// const tabs: Tab[] = [
+//   { label: "Portal", id: "portal", active: true },
+//   { label: "Stats", id: "stats" },
+//   { label: "Inbox", id: "inbox" },
+//   { label: "Team", id: "team" },
+//   { label: "Notifications", id: "notifications", badge: "3" },
+// ]
 
-const activityData = [
+const activityData: ActivityItem[] = [
   {
     caseId: "060924-5",
     type: "Wildlife",
@@ -77,9 +183,18 @@ const activityData = [
   },
 ]
 
-const targetZones = ["Assam", "West Bengal", "Bihar", "Uttar Pradesh", "Idukki", "Wayanad", "Kottayam", "Palakad"]
+const targetZones: string[] = [
+  "Assam",
+  "West Bengal",
+  "Bihar",
+  "Uttar Pradesh",
+  "Idukki",
+  "Wayanad",
+  "Kottayam",
+  "Palakad",
+]
 
-const newsItems = [
+const newsItems: NewsItem[] = [
   {
     date: "August 24, 2024",
     content: "A significant earthquake shook India earlier today, leaving at least 50 people injured...",
@@ -95,7 +210,7 @@ const newsItems = [
   },
 ]
 
-const rescueRequestsData = [
+const rescueRequestsData: RescueRequest[] = [
   {
     id: 1,
     subject: "Water Level",
@@ -208,7 +323,7 @@ const rescueRequestsData = [
   },
 ]
 
-const reliefRequestsData = [
+const reliefRequestsData: ReliefRequest[] = [
   {
     id: "VOL123",
     timeReceived: "4th Sep 2024, 9.24 PM",
@@ -319,7 +434,7 @@ const reliefRequestsData = [
   },
 ]
 
-const volunteerRecordsData = [
+const volunteerRecordsData: VolunteerRecord[] = [
   {
     id: "VOL22334",
     name: "Aaryan Singh",
@@ -343,7 +458,7 @@ const volunteerRecordsData = [
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
+    id: "VOL22335",
     name: "Sanjana",
     gender: "Female",
     contact: "9876543219",
@@ -364,207 +479,186 @@ const volunteerRecordsData = [
     profession: ["Nurse", "Volunteer Coordinator"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
+  // Add more unique records with different IDs
   {
-    id: "VOL22334",
-    name: "Sanjana",
-    gender: "Female",
-    contact: "9876543219",
+    id: "VOL22336",
+    name: "Rahul Kumar",
+    gender: "Male",
+    contact: "9876543220",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
+    email: "rahul@gmail.com",
+    fullContact: "9876543220",
+    address: "Sector 20, Gurgaon, Haryana Pincode-122001",
+    bloodGroup: "A+",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456791",
+    ayushmanId: "674528391015",
+    cases: 2,
+    modeOfHelp: "Rescue",
+    skills: ["Swimming", "Rock Climbing", "First Aid"],
+    profession: ["Firefighter", "Rescue Specialist"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
+    id: "VOL22337",
+    name: "Priya Sharma",
     gender: "Female",
-    contact: "9876543219",
+    contact: "9876543221",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
-    allergy: "None",
+    email: "priya@gmail.com",
+    fullContact: "9876543221",
+    address: "MG Road, Bangalore, Karnataka Pincode-560001",
+    bloodGroup: "B-",
+    allergy: "Dust",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456792",
+    ayushmanId: "674528391016",
+    cases: 7,
+    modeOfHelp: "Medical Aid, Relief",
+    skills: ["Medical Training", "Crisis Management", "Communication"],
+    profession: ["Doctor", "Emergency Responder"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
-    gender: "Female",
-    contact: "9876543219",
+    id: "VOL22338",
+    name: "Amit Patel",
+    gender: "Male",
+    contact: "9876543222",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
+    email: "amit@gmail.com",
+    fullContact: "9876543222",
+    address: "Satellite, Ahmedabad, Gujarat Pincode-380015",
+    bloodGroup: "AB+",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456793",
+    ayushmanId: "674528391017",
+    cases: 4,
+    modeOfHelp: "Relief, Logistics",
+    skills: ["Logistics", "Supply Chain", "Coordination"],
+    profession: ["Supply Chain Manager", "Volunteer"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
+    id: "VOL22339",
+    name: "Neha Singh",
     gender: "Female",
-    contact: "9876543219",
+    contact: "9876543223",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
+    email: "neha@gmail.com",
+    fullContact: "9876543223",
+    address: "Civil Lines, Jaipur, Rajasthan Pincode-302006",
+    bloodGroup: "O-",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456794",
+    ayushmanId: "674528391018",
+    cases: 6,
+    modeOfHelp: "Rescue, Relief",
+    skills: ["Search and Rescue", "First Aid", "Team Leadership"],
+    profession: ["Police Officer", "Search and Rescue"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
-    gender: "Female",
-    contact: "9876543219",
+    id: "VOL22340",
+    name: "Vikram Reddy",
+    gender: "Male",
+    contact: "9876543224",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
+    email: "vikram@gmail.com",
+    fullContact: "9876543224",
+    address: "Banjara Hills, Hyderabad, Telangana Pincode-500034",
+    bloodGroup: "A-",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456795",
+    ayushmanId: "674528391019",
+    cases: 3,
+    modeOfHelp: "Technical Support",
+    skills: ["Technical Support", "Communication Systems", "IT"],
+    profession: ["IT Engineer", "Technical Volunteer"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
+    id: "VOL22341",
+    name: "Kavya Nair",
     gender: "Female",
-    contact: "9876543219",
+    contact: "9876543225",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
-    allergy: "None",
+    email: "kavya@gmail.com",
+    fullContact: "9876543225",
+    address: "Marine Drive, Kochi, Kerala Pincode-682031",
+    bloodGroup: "B+",
+    allergy: "Seafood",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456796",
+    ayushmanId: "674528391020",
+    cases: 8,
+    modeOfHelp: "Medical Aid, Counseling",
+    skills: ["Counseling", "Psychology", "Crisis Intervention"],
+    profession: ["Psychologist", "Counselor"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
-    gender: "Female",
-    contact: "9876543219",
+    id: "VOL22342",
+    name: "Arjun Gupta",
+    gender: "Male",
+    contact: "9876543226",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
+    email: "arjun@gmail.com",
+    fullContact: "9876543226",
+    address: "Park Street, Kolkata, West Bengal Pincode-700016",
+    bloodGroup: "AB-",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
+    phrAddress: "3456797",
+    ayushmanId: "674528391021",
     cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    modeOfHelp: "Rescue, Relief",
+    skills: ["Rescue Operations", "Emergency Response", "Leadership"],
+    profession: ["Emergency Services", "Team Leader"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
-    id: "VOL22334",
-    name: "Sanjana",
+    id: "VOL22343",
+    name: "Meera Joshi",
     gender: "Female",
-    contact: "9876543219",
+    contact: "9876543227",
     status: "Verified",
     medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
+    email: "meera@gmail.com",
+    fullContact: "9876543227",
+    address: "Shivaji Nagar, Pune, Maharashtra Pincode-411005",
     bloodGroup: "O+",
     allergy: "None",
     medicalConditions: "None",
     phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
-    avatar: "/placeholder.svg?height=60&width=60",
-  },
-  {
-    id: "VOL22334",
-    name: "Sanjana",
-    gender: "Female",
-    contact: "9876543219",
-    status: "Verified",
-    medicalProfile: "Valid",
-    email: "sanjana@gmail.com",
-    fullContact: "9876543219",
-    address: "Sector 15, Noida, Uttar Pradesh Pincode-201301",
-    bloodGroup: "O+",
-    allergy: "None",
-    medicalConditions: "None",
-    phobia: "None",
-    phrAddress: "3456790",
-    ayushmanId: "674528391014",
-    cases: 5,
-    modeOfHelp: "Relief, Medical Aid",
-    skills: ["First Aid", "Counseling", "Communication"],
-    profession: ["Nurse", "Volunteer Coordinator"],
+    phrAddress: "3456798",
+    ayushmanId: "674528391022",
+    cases: 4,
+    modeOfHelp: "Relief, Community Support",
+    skills: ["Community Outreach", "Social Work", "Coordination"],
+    profession: ["Social Worker", "Community Leader"],
     avatar: "/placeholder.svg?height=60&width=60",
   },
 ]
 
-const governmentRecordsData = [
+const governmentRecordsData: GovernmentRecord[] = [
   {
     govId: "GOV/IND-01/2345",
     name: "Manohar Raj",
@@ -574,68 +668,68 @@ const governmentRecordsData = [
     zipCode: "141001",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2346",
+    name: "Rajesh Kumar",
+    aadharNo: "223300445567",
+    lastProfileUpdate: "02.08.2024 10:30",
+    lastActivity: "06.09.2024 14:30",
+    zipCode: "141002",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2347",
+    name: "Sunita Devi",
+    aadharNo: "223300445568",
+    lastProfileUpdate: "03.08.2024 09:15",
+    lastActivity: "07.09.2024 12:45",
+    zipCode: "141003",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2348",
+    name: "Prakash Singh",
+    aadharNo: "223300445569",
+    lastProfileUpdate: "04.08.2024 15:20",
+    lastActivity: "08.09.2024 18:10",
+    zipCode: "141004",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2349",
+    name: "Anita Sharma",
+    aadharNo: "223300445570",
+    lastProfileUpdate: "05.08.2024 13:45",
+    lastActivity: "09.09.2024 11:20",
+    zipCode: "141005",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2350",
+    name: "Deepak Verma",
+    aadharNo: "223300445571",
+    lastProfileUpdate: "06.08.2024 16:30",
+    lastActivity: "10.09.2024 15:50",
+    zipCode: "141006",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2351",
+    name: "Kavita Gupta",
+    aadharNo: "223300445572",
+    lastProfileUpdate: "07.08.2024 12:10",
+    lastActivity: "11.09.2024 17:30",
+    zipCode: "141007",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2352",
+    name: "Suresh Yadav",
+    aadharNo: "223300445573",
+    lastProfileUpdate: "08.08.2024 14:25",
+    lastActivity: "12.09.2024 13:15",
+    zipCode: "141008",
   },
   {
-    govId: "GOV/IND-01/2345",
-    name: "Manohar Raj",
-    aadharNo: "223300445566",
-    lastProfileUpdate: "01.08.2024 11:00",
-    lastActivity: "05.09.2024 16:00",
-    zipCode: "141001",
+    govId: "GOV/IND-01/2353",
+    name: "Pooja Mishra",
+    aadharNo: "223300445574",
+    lastProfileUpdate: "09.08.2024 11:40",
+    lastActivity: "13.09.2024 16:25",
+    zipCode: "141009",
   },
 ]
 
@@ -666,23 +760,23 @@ const rescueRequestData = [
 
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState("dashboard")
-  const [activeTab, setActiveTab] = useState("portal")
+  // const [activeTab, setActiveTab] = useState("portal")
   const [activeVerificationTab, setActiveVerificationTab] = useState("case")
   const [showCaseReport, setShowCaseReport] = useState(false)
   const [showVolunteerReport, setShowVolunteerReport] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [confirmationAction, setConfirmationAction] = useState(null)
-  const [selectedCase, setSelectedCase] = useState(null)
-  const [selectedVolunteer, setSelectedVolunteer] = useState(null)
+  const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction | null>(null)
+  const [selectedCase, setSelectedCase] = useState<CaseVerification | null>(null)
+  const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerVerification | null>(null)
   const [activeRequestTab, setActiveRequestTab] = useState("rescue")
   const [activeRecordTab, setActiveRecordTab] = useState("volunteers")
   const [showAllActivities, setShowAllActivities] = useState(false)
-  const [rescueRequests, setRescueRequests] = useState(rescueRequestsData)
+  const [rescueRequests, setRescueRequests] = useState<RescueRequest[]>(rescueRequestsData)
   const [showVolunteerProfile, setShowVolunteerProfile] = useState(false)
-  const [selectedVolunteerRecord, setSelectedVolunteerRecord] = useState(null)
+  const [selectedVolunteerRecord, setSelectedVolunteerRecord] = useState<VolunteerRecord | null>(null)
 
-  const caseVerificationData = [
+  const caseVerificationData: CaseVerification[] = [
     {
       id: 1,
       concern: "Wildfire",
@@ -725,9 +819,9 @@ export default function Dashboard() {
     },
   ]
 
-  const [caseData, setCaseData] = useState(caseVerificationData)
+  const [caseData, setCaseData] = useState<CaseVerification[]>(caseVerificationData)
 
-  const volunteerVerificationData = [
+  const volunteerVerificationData: VolunteerVerification[] = [
     {
       id: 1,
       name: "Ashish Winston",
@@ -765,14 +859,16 @@ export default function Dashboard() {
     },
   ]
 
-  const [volunteerData, setVolunteerData] = useState(volunteerVerificationData)
+  const [volunteerData, setVolunteerData] = useState<VolunteerVerification[]>(volunteerVerificationData)
 
-  const handleAction = (action, type, item) => {
+  const handleAction = (action: string, type: string, item: CaseVerification | VolunteerVerification) => {
     setConfirmationAction({ action, type, item })
     setShowConfirmation(true)
   }
 
   const confirmAction = () => {
+    if (!confirmationAction) return
+
     const { action, type, item } = confirmationAction
 
     if (type === "case") {
@@ -797,7 +893,7 @@ export default function Dashboard() {
     setConfirmationAction(null)
   }
 
-  const handleCheckboxChange = (id, checked) => {
+  const handleCheckboxChange = (id: number, checked: boolean) => {
     setRescueRequests((prev) => prev.map((request) => (request.id === id ? { ...request, checked } : request)))
   }
 
@@ -1740,7 +1836,7 @@ export default function Dashboard() {
                       <td className="py-4 px-6">
                         <Checkbox
                           checked={item.checked}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, checked)}
+                          onCheckedChange={(checked) => handleCheckboxChange(item.id, checked as boolean)}
                         />
                       </td>
                       <td className="py-4 px-6 text-sm text-gray-900">{item.subject}</td>
@@ -1835,6 +1931,42 @@ export default function Dashboard() {
             </Card>
 
             {/* Total Rescue Request */}
+            <Card className="bg-gradient-to-br from-blue-400 to-blue-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FileText className="w-8 h-8" />
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-lg font-medium">Total Rescue Request</h3>
+                    <p className="text-3xl font-bold">112</p>
+                  </div>
+                </div>
+                <div className="h-24 mb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={rescueRequestData.slice(0, 7)}>
+                      <Bar dataKey="uv" fill="rgba(255,255,255,0.8)" radius={[2, 2, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                    <span>Completed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <span>In Operation</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                    <span>Pending</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Current Expenditure */}
             <Card className="bg-gradient-to-br from-blue-400 to-blue-600 text-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -2109,6 +2241,644 @@ export default function Dashboard() {
     </div>
   )
 
+  const renderReportsContent = () => (
+    <div className="space-y-6">
+      {/* Reports Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Emergency Response Reports</h2>
+          <p className="text-gray-600">Comprehensive analytics and insights for crisis management</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Export All
+          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            Generate Report
+          </Button>
+        </div>
+      </div>
+
+      {/* Report Categories */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-red-100 p-3 rounded-lg">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+              <Badge className="bg-red-100 text-red-800">Critical</Badge>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Incident Reports</h3>
+            <p className="text-gray-600 text-sm mb-4">Detailed analysis of emergency incidents and response times</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Total Incidents</span>
+                <span className="font-medium">1,247</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Resolved</span>
+                <span className="font-medium text-green-600">1,089</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Pending</span>
+                <span className="font-medium text-orange-600">158</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+              <Badge className="bg-blue-100 text-blue-800">Active</Badge>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Volunteer Performance</h3>
+            <p className="text-gray-600 text-sm mb-4">Volunteer engagement and effectiveness metrics</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Active Volunteers</span>
+                <span className="font-medium">2,456</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Response Rate</span>
+                <span className="font-medium text-green-600">94.2%</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Avg. Response Time</span>
+                <span className="font-medium">12 min</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-green-100 p-3 rounded-lg">
+                <CreditCard className="w-8 h-8 text-green-600" />
+              </div>
+              <Badge className="bg-green-100 text-green-800">Updated</Badge>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Resource Allocation</h3>
+            <p className="text-gray-600 text-sm mb-4">Budget utilization and resource distribution analysis</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Total Budget</span>
+                <span className="font-medium">₹50.2L</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Utilized</span>
+                <span className="font-medium text-blue-600">₹38.7L</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Efficiency</span>
+                <span className="font-medium text-green-600">87.3%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-purple-100 p-3 rounded-lg">
+                <BarChart3 className="w-8 h-8 text-purple-600" />
+              </div>
+              <Badge className="bg-purple-100 text-purple-800">Trending</Badge>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Trend Analysis</h3>
+            <p className="text-gray-600 text-sm mb-4">Historical data and predictive insights</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Monthly Growth</span>
+                <span className="font-medium text-green-600">+12.5%</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Peak Hours</span>
+                <span className="font-medium">2-6 PM</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Forecast Accuracy</span>
+                <span className="font-medium">91.8%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Reports */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <FileText className="w-5 h-5 mr-2 text-blue-500" />
+            Recent Reports
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              {
+                title: "Monthly Emergency Response Summary - September 2024",
+                type: "Monthly Report",
+                date: "Oct 1, 2024",
+                status: "Completed",
+                size: "2.4 MB"
+              },
+              {
+                title: "Volunteer Performance Analysis Q3 2024",
+                type: "Performance Report",
+                date: "Sep 28, 2024",
+                status: "Completed",
+                size: "1.8 MB"
+              },
+              {
+                title: "Resource Utilization Report - August 2024",
+                type: "Financial Report",
+                date: "Sep 25, 2024",
+                status: "Completed",
+                size: "3.1 MB"
+              },
+              {
+                title: "Incident Response Time Analysis",
+                type: "Operational Report",
+                date: "Sep 20, 2024",
+                status: "In Progress",
+                size: "1.2 MB"
+              }
+            ].map((report, index) => (
+              <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                <div className="flex items-center space-x-4">
+                  <div className="bg-blue-100 p-2 rounded">
+                    <FileText className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{report.title}</h4>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span>{report.type}</span>
+                      <span>•</span>
+                      <span>{report.date}</span>
+                      <span>•</span>
+                      <span>{report.size}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Badge className={`${
+                    report.status === "Completed"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}>
+                    {report.status}
+                  </Badge>
+                  <Button size="sm" variant="outline">
+                    <Download className="w-4 h-4 mr-1" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Reports Generated</p>
+                <p className="text-2xl font-bold text-gray-900">156</p>
+                <p className="text-sm text-green-600">+23% this month</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <BarChart3 className="w-8 h-8 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Data Points Analyzed</p>
+                <p className="text-2xl font-bold text-gray-900">45.2K</p>
+                <p className="text-sm text-blue-600">Real-time updates</p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-lg">
+                <Activity className="w-8 h-8 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">System Uptime</p>
+                <p className="text-2xl font-bold text-gray-900">99.8%</p>
+                <p className="text-sm text-green-600">Excellent performance</p>
+              </div>
+              <div className="bg-purple-100 p-3 rounded-lg">
+                <Shield className="w-8 h-8 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+
+  const renderTeamContent = () => (
+    <div className="space-y-6">
+      {/* Team Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Emergency Response Team</h2>
+          <p className="text-gray-600">Manage your crisis response team and organizational structure</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Add Member
+          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            Team Settings
+          </Button>
+        </div>
+      </div>
+
+      {/* Team Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-gray-900">48</p>
+                <p className="text-sm text-green-600">+3 this week</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Now</p>
+                <p className="text-2xl font-bold text-gray-900">32</p>
+                <p className="text-sm text-blue-600">66.7% online</p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-lg">
+                <Activity className="w-8 h-8 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">On Duty</p>
+                <p className="text-2xl font-bold text-gray-900">24</p>
+                <p className="text-sm text-orange-600">Emergency ready</p>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-lg">
+                <Shield className="w-8 h-8 text-orange-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Response Rate</p>
+                <p className="text-2xl font-bold text-gray-900">94%</p>
+                <p className="text-sm text-green-600">Excellent</p>
+              </div>
+              <div className="bg-purple-100 p-3 rounded-lg">
+                <CheckCircle className="w-8 h-8 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Team Departments */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2 text-red-500" />
+              Emergency Response
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Team Lead</span>
+                <span className="font-medium">Dr. Sarah Johnson</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Members</span>
+                <span className="font-medium">16</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Active Cases</span>
+                <span className="font-medium text-red-600">8</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Avg Response Time</span>
+                <span className="font-medium text-green-600">8 min</span>
+              </div>
+              <Button variant="outline" className="w-full">
+                View Team
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <Users className="w-5 h-5 mr-2 text-blue-500" />
+              Volunteer Coordination
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Team Lead</span>
+                <span className="font-medium">Mark Rodriguez</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Members</span>
+                <span className="font-medium">12</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Volunteers Managed</span>
+                <span className="font-medium text-blue-600">2,456</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Deployment Rate</span>
+                <span className="font-medium text-green-600">92%</span>
+              </div>
+              <Button variant="outline" className="w-full">
+                View Team
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <BarChart3 className="w-5 h-5 mr-2 text-green-500" />
+              Operations & Analytics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Team Lead</span>
+                <span className="font-medium">Lisa Chen</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Members</span>
+                <span className="font-medium">8</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Reports Generated</span>
+                <span className="font-medium text-green-600">156</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Data Accuracy</span>
+                <span className="font-medium text-green-600">98.5%</span>
+              </div>
+              <Button variant="outline" className="w-full">
+                View Team
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Team Members */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <Users className="w-5 h-5 mr-2 text-blue-500" />
+            Team Members
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b bg-gray-50">
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Member</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Role</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Department</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Status</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Last Active</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    name: "Dr. Sarah Johnson",
+                    role: "Emergency Response Lead",
+                    department: "Emergency Response",
+                    status: "Online",
+                    lastActive: "Now",
+                    avatar: "SJ"
+                  },
+                  {
+                    name: "Mark Rodriguez",
+                    role: "Volunteer Coordinator",
+                    department: "Volunteer Coordination",
+                    status: "On Duty",
+                    lastActive: "5 min ago",
+                    avatar: "MR"
+                  },
+                  {
+                    name: "Lisa Chen",
+                    role: "Operations Manager",
+                    department: "Operations & Analytics",
+                    status: "Online",
+                    lastActive: "2 min ago",
+                    avatar: "LC"
+                  },
+                  {
+                    name: "James Wilson",
+                    role: "Field Coordinator",
+                    department: "Emergency Response",
+                    status: "On Field",
+                    lastActive: "1 hour ago",
+                    avatar: "JW"
+                  },
+                  {
+                    name: "Maria Garcia",
+                    role: "Medical Coordinator",
+                    department: "Emergency Response",
+                    status: "Online",
+                    lastActive: "10 min ago",
+                    avatar: "MG"
+                  }
+                ].map((member, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                          {member.avatar}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{member.name}</p>
+                          <p className="text-sm text-gray-500">{member.role}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-900">{member.role}</td>
+                    <td className="py-4 px-6 text-sm text-gray-900">{member.department}</td>
+                    <td className="py-4 px-6">
+                      <Badge className={`${
+                        member.status === "Online"
+                          ? "bg-green-100 text-green-800"
+                          : member.status === "On Duty"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-orange-100 text-orange-800"
+                      }`}>
+                        {member.status}
+                      </Badge>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-900">{member.lastActive}</td>
+                    <td className="py-4 px-6">
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          <Mail className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Team Performance */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Team Performance Metrics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Response Efficiency</span>
+                  <span className="font-medium">94%</span>
+                </div>
+                <Progress value={94} className="h-2" />
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Case Resolution Rate</span>
+                  <span className="font-medium">87%</span>
+                </div>
+                <Progress value={87} className="h-2" />
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Team Collaboration</span>
+                  <span className="font-medium">91%</span>
+                </div>
+                <Progress value={91} className="h-2" />
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Resource Utilization</span>
+                  <span className="font-medium">78%</span>
+                </div>
+                <Progress value={78} className="h-2" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Recent Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                {
+                  action: "Emergency response deployed",
+                  member: "Dr. Sarah Johnson",
+                  time: "2 hours ago",
+                  type: "emergency"
+                },
+                {
+                  action: "Volunteer team assembled",
+                  member: "Mark Rodriguez",
+                  time: "4 hours ago",
+                  type: "coordination"
+                },
+                {
+                  action: "Weekly report generated",
+                  member: "Lisa Chen",
+                  time: "1 day ago",
+                  type: "report"
+                },
+                {
+                  action: "Training session completed",
+                  member: "James Wilson",
+                  time: "2 days ago",
+                  type: "training"
+                }
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div className={`w-2 h-2 rounded-full ${
+                    activity.type === "emergency" ? "bg-red-500" :
+                    activity.type === "coordination" ? "bg-blue-500" :
+                    activity.type === "report" ? "bg-green-500" : "bg-purple-500"
+                  }`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                    <p className="text-xs text-gray-500">by {activity.member} • {activity.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+
   const renderSettingsContent = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2146,7 +2916,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-
+  
         {/* Security Settings */}
         <Card>
           <CardHeader>
@@ -2177,7 +2947,7 @@ export default function Dashboard() {
             </Button>
           </CardContent>
         </Card>
-
+  
         {/* System Preferences */}
         <Card>
           <CardHeader>
@@ -2212,7 +2982,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-
+  
         {/* Data Management */}
         <Card>
           <CardHeader>
@@ -2240,7 +3010,7 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
-  )
+  )  
 
   const renderHelpContent = () => (
     <div className="space-y-6">
@@ -2391,25 +3161,9 @@ export default function Dashboard() {
       case "records":
         return renderRecordsContent()
       case "reports":
-        return (
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center">
-              <BarChart3 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Reports</h3>
-              <p className="text-gray-500">Reports section coming soon...</p>
-            </div>
-          </div>
-        )
+        return renderReportsContent()
       case "team":
-        return (
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center">
-              <Users className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Team</h3>
-              <p className="text-gray-500">Team management coming soon...</p>
-            </div>
-          </div>
-        )
+        return renderTeamContent()
       case "verifications":
         return renderVerificationsContent()
       case "settings":
@@ -2421,7 +3175,7 @@ export default function Dashboard() {
     }
   }
 
-  const allActivityData = [
+  const allActivityData: ActivityItem[] = [
     {
       caseId: "060924-5",
       type: "Wildlife",
@@ -2494,9 +3248,11 @@ export default function Dashboard() {
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-16 h-16 bg-white/20 rounded-full overflow-hidden mr-4">
-                    <img
+                    <Image
                       src={selectedVolunteerRecord.avatar || "/placeholder.svg"}
                       alt={selectedVolunteerRecord.name}
+                      width={64}
+                      height={64}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -2596,7 +3352,7 @@ export default function Dashboard() {
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-4">Volunteering Skills</h3>
                 <div className="space-y-2">
-                  {selectedVolunteerRecord.skills.map((skill, index) => (
+                  {selectedVolunteerRecord.skills.map((skill: string, index: number) => (
                     <div key={index} className="text-gray-700 font-medium">
                       {skill}
                     </div>
@@ -2608,7 +3364,7 @@ export default function Dashboard() {
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-4">Profession</h3>
                 <div className="space-y-2">
-                  {selectedVolunteerRecord.profession.map((prof, index) => (
+                  {selectedVolunteerRecord.profession.map((prof: string, index: number) => (
                     <div key={index} className="text-gray-700 font-medium">
                       {prof}
                     </div>
@@ -2632,11 +3388,11 @@ export default function Dashboard() {
             <div className="w-4 h-4 bg-blue-600 rounded-full"></div>
           </div>
         </div>
-
+  
         {/* Navigation Items */}
         <nav className="flex flex-col space-y-4">
           {navigationItems.map((item) => {
-            const Icon = item.icon
+            const Icon = item.icon;
             return (
               <button
                 key={item.id}
@@ -2650,88 +3406,64 @@ export default function Dashboard() {
               >
                 <Icon className="w-6 h-6" />
               </button>
-            )
+            );
           })}
         </nav>
       </div>
-
+  
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {activeNav === "verifications"
-                  ? "Verifications"
-                  : activeNav === "settings"
-                    ? "Settings"
-                    : activeNav === "help"
-                      ? "Help"
-                      : activeNav === "requests"
-                        ? "Requests"
-                        : activeNav === "records"
-                          ? "Records"
-                          : "Dashboard"}
-              </h1>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input placeholder="Search..." className="pl-10 w-80 bg-gray-50 border-gray-200" />
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm">
-                Edit section
-              </Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                Add Charts
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => setShowProfile(true)}>
-                <User className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="w-5 h-5" />
-              </Button>
+            <h1 className="text-2xl font-semibold text-gray-900">
+  {(() => {
+    switch (activeNav) {
+      case "verifications":
+        return "Verifications";
+      case "settings":
+        return "Settings";
+      case "dashboard":
+        return "Dashboard";
+      case "requests":
+        return "Requests";
+      case "records":
+        return "Records";
+      case "reports":
+        return "Reports";
+      case "team":
+        return "Team";
+      case "help":
+        return "Help Center";
+      default:
+        return "Disaster Response System";
+    }
+  })()}
+</h1>
             </div>
           </div>
         </header>
+  
+        {/* Content Area */}
+        <main className="flex-1 p-6 overflow-auto">
+          {/* {activeNav === "verifications" && renderVerificationsContent()} */}
+          {/* {activeNav === "settings" && renderSettingsContent()} */}
+          {/* {activeNav === "dashboard" && renderDashboardContent()}
+          {activeNav === "requests" && renderRequestContent()}
+          {activeNav === "records" && renderRecordsContent()}
+          {activeNav === "reports" && renderReportsContent()}
+          {activeNav === "team" && renderTeamContent()}
+          {activeNav === "help" && renderHelpContent()} */}
+          {showVolunteerProfile && renderVolunteerProfilePanel()}
+          {showProfile && renderProfileModal()}
+          {showVolunteerReport && renderVolunteerReport()}
+          {showCaseReport && renderCaseReport()}
+          {showConfirmation && renderConfirmationDialog()}
+          {renderPageContent()}
 
-        {/* Tabs - Only show on Dashboard */}
-        {activeNav === "dashboard" && (
-          <div className="bg-white border-b border-gray-200 px-6">
-            <nav className="flex space-x-8">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                    tab.active || activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {tab.label}
-                  {tab.badge && (
-                    <Badge variant="secondary" className="bg-red-100 text-red-600 text-xs">
-                      {tab.badge}
-                    </Badge>
-                  )}
-                </button>
-              ))}
-            </nav>
-          </div>
-        )}
-
-        {/* Page Content */}
-        <main className="flex-1 p-6 overflow-auto">{renderPageContent()}</main>
+        </main>
       </div>
-
-      {/* Modals */}
-      {showCaseReport && renderCaseReport()}
-      {showVolunteerReport && renderVolunteerReport()}
-      {showProfile && renderProfileModal()}
-      {showConfirmation && renderConfirmationDialog()}
-      {showVolunteerProfile && renderVolunteerProfilePanel()}
     </div>
-  )
-}
+  );  
+};
